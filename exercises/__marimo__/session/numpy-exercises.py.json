@@ -1,0 +1,493 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.20.4",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "3119512ddfd2c1c3716d69cf44448177",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"numpy-practice\">NumPy Practice</h1>\n<span class=\"paragraph\">This notebook offers a set of exercises for different tasks with NumPy.</span>\n<span class=\"paragraph\">It should be noted there may be more than one different way to answer a question or complete an exercise.</span>\n<span class=\"paragraph\">Exercises are based off (and directly taken from) the quick introduction to NumPy notebook.</span>\n<span class=\"paragraph\">Different tasks will be detailed by comments or text.</span>\n<span class=\"paragraph\">For further reference and resources, it's advised to check out the <a href=\"https://numpy.org/devdocs/user/index.html\" rel=\"noopener noreferrer\" target=\"_blank\">NumPy documentation</a>.</span>\n<span class=\"paragraph\">And if you get stuck, try searching for a question in the following format: \"how to do XYZ with numpy\", where XYZ is the function you want to leverage from NumPy.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "2165a3ac278eb64f0d36dac4f79fbeda",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "7cc04698f109a3467decb7c68fa42339",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "HAXP",
+      "code_hash": "633c465ccec6d0499ab30327ca28a792",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "Cannot interpret 'range(0, 10)' as a data type",
+          "traceback": []
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stderr",
+          "text": "<span class=\"codehilite\"><div class=\"highlight\"><pre><span></span><span class=\"gt\">Traceback (most recent call last):</span>\n  File <span class=\"nb\">&quot;/var/folders/qd/vg6yhmcn4ds86k7wj3gp7yjm0000gn/T/marimo_37873/__marimo__cell_HAXP_.py&quot;</span>, line <span class=\"m\">1</span>, in <span class=\"n\">&lt;module&gt;</span>\n<span class=\"w\">    </span><span class=\"n\">arr_2d_try</span> <span class=\"o\">=</span> <span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">array</span><span class=\"p\">(</span>\n<span class=\"w\">    </span>    <span class=\"nb\">range</span><span class=\"p\">(</span><span class=\"mi\">10</span><span class=\"p\">),</span>\n<span class=\"w\">    </span>    <span class=\"nb\">range</span><span class=\"p\">(</span><span class=\"mi\">10</span><span class=\"p\">)</span>\n<span class=\"w\">    </span><span class=\"p\">)</span>\n<span class=\"gr\">TypeError</span>: <span class=\"n\">Cannot interpret &#39;range(0, 10)&#39; as a data type</span>\n</pre></div>\n</span>",
+          "mimetype": "application/vnd.marimo+traceback"
+        }
+      ]
+    },
+    {
+      "id": "zhEe",
+      "code_hash": "bebb9dcd5a9fbdaa22a08537f8a70b3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "[[0 1 2 3 4 5 6 7 8 9]\n [0 1 2 3 4 5 6 7 8 9]]\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "2500a61a5d87622d87a41941a9a4429f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Now we've you've created 3 different arrays, let's find details about them.</span>\n<span class=\"paragraph\">Find the shape, number of dimensions, data type, size and type of each array.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "b30ab92d3428130175258092438bcf8b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "0616d667b4d46e2842259ec44b604c45",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "396e7ac3281a3796a10a7cf0d085d837",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "97c0083ee1238ef4f58ab67583441529",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "c27abb3bbd67bd58bfd8440270812529",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "a703cf3eeabf209f32a0e5352eb599fe",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "4a46231c77d9afb60d811968f2057940",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "86aa763d9abafe33aa8832512629afae",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "aee117a4545a4bd0b355396762d31f5f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "e69377041d3e83332e2217a7062f9545",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "ee63cfdd1f7cac8d8b0d44ede9c471ec",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Run the cell above again, what happens?</span>\n<span class=\"paragraph\">Are the numbers in the array different or the same? Why do think this is?</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "bda1633654f50bab7705c48794c0aff9",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "c51a6c97dbe44915693fda2c1d63d82b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "1221368d31b30db8ed3c8a139f16c915",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "fbce0a9b27163fd53f57b760710bd018",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "2e190bb1be2944269d33e33df3157646",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "defac2bcee332b6f0c03f6a0ae39dacc",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "5b6ee03fb7384a4753dbc92ba20a9ab9",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "785c52e360b6f17dbff9b9d10e885f69",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "8ad26c9bf8676e7c6dc875f84242bc99",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">When you try the last cell, it produces an error. Why do think this is?</span>\n<span class=\"paragraph\">How would you fix it?</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "1e3964688d6fd40a0c25fe8b19b46ea8",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "32e8bde8bccb6ccbafd09f1d1d50827e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "d1aa691089159424f03df374c9d7ce18",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "998ac43093bc62d2a63cdb696c386281",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "328186eedb0740dd5b12d666a9b21fdb",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "4f6f3989c317ac0b417411b17a027181",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "7fb2848d5b089602e8c6fd79882ab287",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "ec1f9877bf21594c2b819ce001f594b4",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "cac82948183d9f664224c3d17f9e6b4f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "8d365907b52cbf9578683e793e08fdc5",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "83d5505e9ad194c5c2ebf6b92f5f7a49",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "779474558d31da6f54117f4320d39cf1",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "e3de1ded2eb6a1bf343dd0db2992d970",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">What does the transpose do?</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wAgl",
+      "code_hash": "2bb885e5381d061dee87e2d67a810266",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "rEll",
+      "code_hash": "317bf9c4b0217b1f074fd0a0b693c7dc",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dGlV",
+      "code_hash": "61d4f6649b6df343a4dd652fa46ada1a",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SdmI",
+      "code_hash": "317bf9c4b0217b1f074fd0a0b693c7dc",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "lgWD",
+      "code_hash": "e6b8813543756381b7f044ba78240c1c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">It doesn't work. How would you fix it?</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yOPj",
+      "code_hash": "1e7777b195b15ba6242d9b57fc3011f1",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "fwwy",
+      "code_hash": "3ededb0a4c27f9768b641c301da52a52",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Notice how performing a transpose allows the dot product to happen.</span>\n<span class=\"paragraph\">Why is this?</span>\n<span class=\"paragraph\">Checking out the documentation on <a href=\"https://docs.scipy.org/doc/numpy/reference/generated/numpy.dot.html\" rel=\"noopener noreferrer\" target=\"_blank\"><code>np.dot()</code></a> may help, as well as reading <a href=\"https://www.mathsisfun.com/algebra/vectors-dot-product.html\" rel=\"noopener noreferrer\" target=\"_blank\">Math is Fun's guide on the dot product</a>.</span>\n<span class=\"paragraph\">Let's now compare arrays.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "LJZf",
+      "code_hash": "81f39e3370531808823e2d47bb513ef2",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "urSm",
+      "code_hash": "d171373602288c73e781e4959172a121",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "jxvo",
+      "code_hash": "6be43bb89cfe16d18959fbf6ccdfd81e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">What happens when you compare the arrays with <code>&gt;</code>?</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "mWxS",
+      "code_hash": "a6f7d474f22467407dbc8e30e7f67756",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "CcZR",
+      "code_hash": "1017dbb73a04d79c509de2c20e17b170",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "YWSi",
+      "code_hash": "cbb23e01c6f502dc92fc17d9ee1d7fd7",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "zlud",
+      "code_hash": "9fbcbb039e8772d90db89741c33baf88",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "tZnO",
+      "code_hash": "bf719dd3da425331fd07d1fc69f50908",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "xvXZ",
+      "code_hash": "f06cd3b79059863647f6b24a69628bbb",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "CLip",
+      "code_hash": "fb034eff02cded0d99c9901f1fa2c401",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "YECM",
+      "code_hash": "b392115111edc785e810a1e92c752d39",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "cEAS",
+      "code_hash": "c974b99dd0e1241c25f5ccd88a476c7b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iXej",
+      "code_hash": "78bd4d1cfe41dbfd72818f75f9c519e4",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "EJmg",
+      "code_hash": "4bb1632c2954bd1fc573c9f41f5ea774",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "UmEG",
+      "code_hash": "474c9b21a9122979120c01be696d2a28",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"extensions\">Extensions</h2>\n<span class=\"paragraph\">For more exercises, check out the <a href=\"https://numpy.org/doc/stable/user/quickstart.html\" rel=\"noopener noreferrer\" target=\"_blank\">NumPy quickstart tutorial</a>. A good practice would be to read through it and for the parts you find interesting, add them into the end of this notebook.</span>\n<span class=\"paragraph\">Pay particular attention to the section on broadcasting. And most importantly, get hands-on with the code as much as possible. If in dobut, run the code, see what it does.</span>\n<span class=\"paragraph\">The next place you could go is the <a href=\"https://stackoverflow.com/questions/tagged/numpy?sort=MostVotes&amp;edited=true\" rel=\"noopener noreferrer\" target=\"_blank\">Stack Overflow page for the top questions and answers for NumPy</a>. Often, you'll find some of the most common and useful NumPy functions here. Don't forget to play around with the filters! You'll likely find something helpful here.</span>\n<span class=\"paragraph\">Finally, as always, remember, the best way to learn something new is to try it. And try it relentlessly. If you get interested in some kind of NumPy function, asking yourself, \"I wonder if NumPy could do that?\", go and find out.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}
