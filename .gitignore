@@ -127,6 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Claude related files
 .claude/
 __marimo__/
 CLAUDE.md
+
+# generic files to ignore
+export.xml
