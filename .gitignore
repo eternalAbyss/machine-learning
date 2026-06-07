@@ -135,3 +135,6 @@ CLAUDE.md
 
 # generic files to ignore
 export.xml
+
+# macOS
+.DS_Store
