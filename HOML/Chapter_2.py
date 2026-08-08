@@ -919,8 +919,11 @@ def _(
     make_pipeline,
     preprocessing,
 ):
+    # Making a pipepline and training the model
     lin_reg = make_pipeline(preprocessing, LinearRegression())
+    print("Training in progress...")
     lin_reg.fit(housing_values, housing_labels)
+    print("Model trained")
     return (lin_reg,)
 
 
@@ -940,7 +943,11 @@ def _(housing_labels, housing_predictions):
 
 
 @app.cell
-def _():
+def _(housing_values, make_pipeline, preprocessing):
+    from sklearn.tree import DecisionTreeRegressor
+
+    tree_reg = make_pipeline(preprocessing, DecisionTreeRegressor(random_state=42))
+    tree_reg.fir(housing_values)
     return
 
 
