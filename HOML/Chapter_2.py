@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.13"
+__generated_with = "0.23.16"
 app = marimo.App(width="full")
 
 
@@ -939,55 +939,102 @@ def _(housing_labels, housing_predictions):
 
     lin_rmse = root_mean_squared_error(housing_labels, housing_predictions)
     lin_rmse
-    return
+    return (root_mean_squared_error,)
 
 
 @app.cell
-def _(housing_values, make_pipeline, preprocessing):
+def _(housing_labels, housing_values, make_pipeline, preprocessing):
     from sklearn.tree import DecisionTreeRegressor
 
     tree_reg = make_pipeline(preprocessing, DecisionTreeRegressor(random_state=42))
-    tree_reg.fir(housing_values)
+    tree_reg.fit(housing_values, housing_labels)
+    return (tree_reg,)
+
+
+@app.cell
+def _(housing_labels, housing_values, root_mean_squared_error, tree_reg):
+    housing_predictions_tree = tree_reg.predict(housing_values)
+    tree_rmse = root_mean_squared_error(housing_labels, housing_predictions_tree)
+    print(tree_rmse)
     return
 
 
 @app.cell
-def _():
+def _(housing_labels, housing_values, tree_reg):
+    from sklearn.model_selection import cross_val_score
+
+    tree_rmses = -cross_val_score(tree_reg, housing_values, housing_labels, scoring="neg_root_mean_squared_error", cv=10)
+    return cross_val_score, tree_rmses
+
+
+@app.cell
+def _(pd, tree_rmses):
+    pd.Series(tree_rmses).describe()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    **Random forests** work by training many decision trees on random subsets of the features, then averaging out their predictions. Such models composed of many other models are called ensembles: if the underlying models are very diverse, then their errors will not be very correlated, and therefore averaging out the predictions will smooth out the errors, reduce overfitting, and improve the overall performance.
+    """)
     return
 
 
 @app.cell
-def _():
+def _(
+    cross_val_score,
+    housing_labels,
+    housing_values,
+    make_pipeline,
+    preprocessing,
+):
+    from sklearn.ensemble import RandomForestRegressor
+
+    forest_reg = make_pipeline(preprocessing, RandomForestRegressor(random_state=42))
+    forest_rmses = -cross_val_score(forest_reg, housing_values, housing_labels, scoring="neg_root_mean_squared_error", cv=10)
+    return RandomForestRegressor, forest_rmses
+
+
+@app.cell
+def _(forest_rmses, pd):
+    pd.Series(forest_rmses).describe()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Fine-Tune Your Model
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Grid Search
+    """)
     return
 
 
 @app.cell
-def _():
-    return
+def _(Pipeline, RandomForestRegressor, housing, housing_labels, preprocessing):
+    from sklearn.model_selection import GridSearchCV
 
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _():
+    full_pipeline = Pipeline([
+        ("preprocessing", preprocessing),
+        ("random_forest", RandomForestRegressor(random_state=42)),
+    ])
+    param_grid = [
+        {'preprocessing__geo__n_clusters': [5, 8, 10],
+         'random_forest__max_features': [4, 6, 8]},
+        {'preprocessing__geo__n_clusters': [10, 15],
+         'random_forest__max_features': [6, 8, 10]},
+    ]
+    grid_search = GridSearchCV(full_pipeline, param_grid, cv=3,
+                               scoring='neg_root_mean_squared_error')
+    grid_search.fit(housing, housing_labels)
     return
 
 
