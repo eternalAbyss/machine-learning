@@ -6,13 +6,9 @@ app = marimo.App(width="full")
 
 @app.cell
 def _():
+    # Marimo imports
     import marimo as mo
 
-    return (mo,)
-
-
-@app.cell
-def _():
     # ML imports
     from sklearn.preprocessing import OneHotEncoder
     import matplotlib.pyplot as plt
@@ -24,7 +20,7 @@ def _():
     # System imports
     from pathlib import Path
 
-    return OneHotEncoder, Path, np, pd, plt, tarfile, urllib
+    return OneHotEncoder, Path, mo, np, pd, plt, tarfile, urllib
 
 
 @app.cell(hide_code=True)
@@ -44,7 +40,6 @@ def _(mo):
 
 @app.cell
 def _(Path, pd, tarfile, urllib):
-
     def load_housing_data():
         tarball_path = Path("datasets/housing.tgz")
         if not tarball_path.is_file():
@@ -768,10 +763,13 @@ def _(mo):
 
 @app.cell
 def _(SimpleImputer, StandardScaler):
-    from sklearn.pipeline import make_pipeline
+    from sklearn.pipeline import Pipeline
 
-    num_pipeline = make_pipeline(SimpleImputer(strategy="median"), StandardScaler())
-    return make_pipeline, num_pipeline
+    num_pipeline = Pipeline([
+        ("impute", SimpleImputer(strategy="median")), 
+        ("standardize", StandardScaler()),
+    ])
+    return Pipeline, num_pipeline
 
 
 @app.cell
@@ -806,9 +804,10 @@ def _(mo):
 
 
 @app.cell
-def _(OneHotEncoder, SimpleImputer, make_pipeline, np, num_pipeline):
+def _(OneHotEncoder, SimpleImputer, np, num_pipeline):
     from sklearn.compose import make_column_selector, make_column_transformer
     from sklearn.compose import ColumnTransformer
+    from sklearn.pipeline import make_pipeline
 
     cat_pipeline = make_pipeline(
         SimpleImputer(strategy="most_frequent"),
@@ -822,6 +821,7 @@ def _(OneHotEncoder, SimpleImputer, make_pipeline, np, num_pipeline):
         ColumnTransformer,
         cat_pipeline,
         make_column_selector,
+        make_pipeline,
         preprocessing_,
     )
 
@@ -1019,7 +1019,13 @@ def _(mo):
 
 
 @app.cell
-def _(Pipeline, RandomForestRegressor, housing, housing_labels, preprocessing):
+def _(
+    Pipeline,
+    RandomForestRegressor,
+    housing_labels,
+    housing_values,
+    preprocessing,
+):
     from sklearn.model_selection import GridSearchCV
 
     full_pipeline = Pipeline([
@@ -1034,7 +1040,272 @@ def _(Pipeline, RandomForestRegressor, housing, housing_labels, preprocessing):
     ]
     grid_search = GridSearchCV(full_pipeline, param_grid, cv=3,
                                scoring='neg_root_mean_squared_error')
-    grid_search.fit(housing, housing_labels)
+    grid_search.fit(housing_values, housing_labels)
+    return full_pipeline, grid_search
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    You can refer to any hyperparameter of any estimator in a pipeline, even if this estimator is nested deep inside several pipelines and column transformers. For example, when Scikit-Learn sees `preprocessing__geo__n_clusters`, it splits this string at the double underscores, then it looks for an estimator named `preprocessing` in the pipeline and finds the preprocessing ColumnTransformer. Next, it looks for a transformer named `geo` inside this ColumnTransformer and finds the ClusterSimilarity transformer we used on the latitude and longitude attributes. Then it finds this transformer’s `n_clusters` hyperparameter.
+
+    This is a good thing since these hyperparameters often interact so changing one param could mean that we have to change the other as well. Like increasing the `n_clusters` may require increasing `max_features` as well.
+
+    > Pipeline's `memory` param can be set to a caching directory. If you first fit the pipeline, sklearn will save the fitted transformers to this directory. If you then fit the pipeline again with the same hyperparameters, sklearn will just load the cached tranformers.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Since we have 2 dict in param_grid the total runs happened are : $3 * 3 + 2 * 3 = 9 + 6 = 15$.
+
+    Also this runs for a total for 3 time since we have `cv=3` so we finally end up running the pipeline for $45$ times.
+    """)
+    return
+
+
+@app.cell
+def _(grid_search):
+    grid_search.best_params_
+    return
+
+
+@app.cell
+def _(grid_search):
+    grid_search.best_estimator_
+    return
+
+
+@app.cell
+def _(grid_search, pd):
+    # Evaluation scores
+    cv_res = pd.DataFrame(grid_search.cv_results_)
+    cv_res["mean_test_score"] = -cv_res["mean_test_score"]
+    cols = ['mean_fit_time', 'mean_score_time',
+           'param_preprocessing__geo__n_clusters',
+           'param_random_forest__max_features', 'split0_test_score',
+           'split1_test_score', 'split2_test_score', 'mean_test_score',
+           'std_test_score', 'rank_test_score']
+    cv_res = cv_res[cols]
+    rename_cols = {
+        'param_preprocessing__geo__n_clusters' : 'n_clusters',
+        'param_random_forest__max_features' : 'max_features', 
+        'split0_test_score': 'split_0',
+        'split1_test_score': 'split_1', 
+        'split2_test_score': 'split_2', 
+        'mean_test_score' : 'mean_test_rmse', 
+        'rank_test_score' : 'rank'}
+    cv_res = cv_res[list(rename_cols)].rename(columns=rename_cols)
+    cv_res.sort_values(by="mean_test_rmse", ascending=True, inplace=True)
+    cv_res.head()
+    return cols, rename_cols
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Wrapping preprocessing steps in a Scikit-Learn pipeline allows you to tune the preprocessing hyperparameters along with the model hyperparameters. This is a good thing since they often interact. For example, perhaps increasing n_clusters requires increasing max_features as well. If fitting the pipeline transformers is computationally expensive, you can set the pipeline’s memory parameter to the path of a caching directory: when you first fit the pipeline, Scikit-Learn will save the fitted transformers to this directory. If you then fit the pipeline again with the same hyperparameters, Scikit-Learn will just load the cached transformers.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Randomized Search
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    RandomizedSearchCV is often preferable, especially when the hyperparameter search space is large.
+    It evaluates a fixed number of combinations, selecting a random value for each hyperparameter at every iteration.
+    """)
+    return
+
+
+@app.cell
+def _(full_pipeline, housing_labels, housing_values):
+    from sklearn.model_selection import RandomizedSearchCV
+    from scipy.stats import randint
+
+    param_ditributions = {
+        'preprocessing__geo__n_clusters' : randint(low=3, high=50),
+        'random_forest__max_features': randint(low=2, high=20)
+    }
+
+    rnd_search = RandomizedSearchCV(
+        full_pipeline, param_distributions=param_ditributions, n_iter=10, cv=3,
+        scoring='neg_root_mean_squared_error', random_state=42
+    )
+
+    rnd_search.fit(housing_values, housing_labels)
+    return (rnd_search,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Scikit-Learn also has HalvingRandomSearchCV and HalvingGridSearchCV hyperparameter search classes. Their goal is to use the computational resources more efficiently, either to train faster or to explore a larger hyperparameter space.
+    """)
+    return
+
+
+@app.cell
+def _(cols, pd, rename_cols, rnd_search):
+    # Evaluation scores
+    cv_res_rf = pd.DataFrame(rnd_search.cv_results_)
+    cv_res_rf["mean_test_score"] = -cv_res_rf["mean_test_score"]
+    cv_res_rf = cv_res_rf[cols]
+    cv_res_rf = cv_res_rf[list(rename_cols)].rename(columns=rename_cols)
+    cv_res_rf.sort_values(by="mean_test_rmse", ascending=True, inplace=True)
+    cv_res_rf.head()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Ensemble Methods
+    """)
+    return
+
+
+@app.cell
+def _(rnd_search):
+    final_model = rnd_search.best_estimator_
+    feature_importances = final_model["random_forest"].feature_importances_
+    feature_importances.round(2)
+    return feature_importances, final_model
+
+
+@app.cell
+def _(feature_importances, final_model):
+    sorted(zip(feature_importances, final_model["preprocessing"].get_feature_names_out()), reverse=True)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    You should also look at the specific errors that your system makes, then try to understand why it makes them and what could fix the problem: adding extra features or getting rid of uninformative ones, cleaning up outliers, etc.
+    """)
+    return
+
+
+@app.cell
+def _(final_model, root_mean_squared_error, strat_test_set):
+    X_test = strat_test_set.drop("median_house_value", axis=1)
+    y_test = strat_test_set["median_house_value"].copy()
+
+    final_predictions = final_model.predict(X_test)
+
+    final_rmse = root_mean_squared_error(y_test, final_predictions)
+    print(final_rmse)
+    return final_predictions, final_rmse, y_test
+
+
+@app.cell
+def _(final_predictions, np, y_test):
+    from scipy import stats
+
+    def rmse(squared_errors):
+        return np.sqrt(np.mean(squared_errors))
+
+    confidence = 0.95
+    squared_errors = (final_predictions - y_test) ** 2
+    boot_result = stats.bootstrap([squared_errors], rmse,
+                                  confidence_level=confidence, random_state=42)
+    rmse_lower, rmse_upper = boot_result.confidence_interval
+    return rmse_lower, rmse_upper
+
+
+@app.cell
+def _(final_rmse, rmse_lower, rmse_upper):
+    print("rmse_lower: {}\nrmse_upper: {}\nrmse_final: {}".format(rmse_lower, rmse_upper, final_rmse))
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Presenting the solution
+    Presenting your solution effectively is what sets great data scientists apart from good ones. You should create concise reports (Markdown, PDFs, slides), visualize key insights (e.g., using Matplotlib or other tools such as SeaBorn or Tableau), and tailor your message to the audience: technical for peers, high-level for stakeholders. Provide impactful and easy-to-remember statements (e.g., “the median income is the number one predictor of housing prices”). Highlight what you have learned, what worked and what did not, what assumptions were made, and what your system’s limitations are.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Launch, Monitor and Maintain your system
+    """)
+    return
+
+
+@app.cell
+def _(final_model):
+    # To save the model, you can use the joblib library like this:
+    import joblib
+
+    joblib.dump(final_model, "my_california_housing_model.pkl")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Perhaps the model will be used within a website: the user will type in some data about a new district and click the Estimate Price button. This will send a query containing the data to the web server, which will forward it to your web application, and finally your code will simply call the model’s predict() method (you want to load the model upon server startup, rather than every time the model is used).
+
+    Another popular strategy is to deploy your model to the cloud, for example on Google’s Vertex AI (formerly Google Cloud AI Platform and Google Cloud ML Engine): just save your model using joblib and upload it to Google Cloud Storage (GCS), then go to Vertex AI and create a new model version, pointing it to the GCS file.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    You need to put in place a monitoring system (with or without human raters to evaluate the live model), as well as all the relevant processes to define what to do in case of failures and how to prepare for them.
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell
+def _():
     return
 
 
