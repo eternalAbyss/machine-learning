@@ -43,7 +43,7 @@ def _(X):
     some_digit = X[0]
     plot_digit(some_digit)
     plt.show()
-    return plt, some_digit
+    return plot_digit, plt, some_digit
 
 
 @app.cell
@@ -56,7 +56,7 @@ def _(y):
 def _(X, y):
     div_ratio = 60000
     X_train, X_test, y_train, y_test = X[:div_ratio], X[div_ratio:], y[:div_ratio], y[div_ratio:]
-    return X_train, y_test, y_train
+    return X_test, X_train, y_test, y_train
 
 
 @app.cell(hide_code=True)
@@ -91,7 +91,7 @@ def _(X_train, y_train_5):
 
     sgd_clf = SGDClassifier(random_state=42)
     sgd_clf.fit(X_train, y_train_5)
-    return (sgd_clf,)
+    return SGDClassifier, sgd_clf
 
 
 @app.cell
@@ -121,7 +121,7 @@ def _(X_train, sgd_clf, y_train_5):
     from sklearn.model_selection import cross_val_score
 
     cross_val_score(sgd_clf, X_train, y_train_5, cv=3, scoring="accuracy")
-    return
+    return (cross_val_score,)
 
 
 @app.cell(hide_code=True)
@@ -257,7 +257,7 @@ def _(mo):
 def _(y_train_5, y_train_pred):
     from sklearn.metrics import f1_score
     f1_score(y_train_5, y_train_pred)
-    return
+    return (f1_score,)
 
 
 @app.cell(hide_code=True)
@@ -283,7 +283,7 @@ def _(y_scores, y_train_5):
     from sklearn.metrics import precision_recall_curve
 
     precisions, recalls, thresholds = precision_recall_curve(y_train_5, y_scores)
-    return precisions, recalls, thresholds
+    return precision_recall_curve, precisions, recalls, thresholds
 
 
 @app.cell
@@ -318,7 +318,7 @@ def _(plt, precisions, recalls, thresholds):
     plt.legend(loc="center right")
 
     plt.show()
-    return prec_at_thresh, rec_at_thresh
+    return np, prec_at_thresh, rec_at_thresh
 
 
 @app.cell
@@ -407,6 +407,406 @@ def _(y_scores, y_train_5):
     from sklearn.metrics import roc_curve
 
     fpr, tpr, thresholds_roc = roc_curve(y_train_5, y_scores)
+    return fpr, tpr
+
+
+@app.cell
+def _(fpr, plt, threshold_for_90_precision, thresholds, tpr):
+    idx_for_threshold_at_90 = (thresholds <= threshold_for_90_precision).argmax()
+    tpr_90, fpr_90 = tpr[idx_for_threshold_at_90], fpr[idx_for_threshold_at_90]
+
+    plt.figure(figsize=(6, 5))
+
+    # 1. Base plots from your snippet
+    plt.plot(fpr, tpr, linewidth=2, label="ROC curve")
+    plt.plot([0, 1], [0, 1], "k:", label="Random classifier's ROC curve")
+    plt.plot([fpr_90], [tpr_90], "ko", label="Threshold for 90% precision")
+
+    # 2. Dotted reference lines to the axes
+    plt.plot([fpr_90, fpr_90], [0.0, tpr_90], "k:")
+    plt.plot([0.0, fpr_90], [tpr_90, tpr_90], "k:")
+
+    # 3. Arrow pointing to the 90% precision threshold point
+    plt.annotate(
+        "Minimum\nthreshold",
+        xy=(fpr_90, tpr_90),
+        xytext=(fpr_90 + 0.15, tpr_90 - 0.25),
+        arrowprops=dict(
+            facecolor="black",
+            shrink=0.08,
+            width=1.5,
+            headwidth=8,
+        ),
+        fontsize=11,
+        ha="center",
+    )
+
+    # 4. Beautify: axis bounds, labels, grid, and legend
+    plt.axis([0, 1, 0, 1])
+    plt.xlabel("False Positive Rate (Fall-Out)", fontsize=12)
+    plt.ylabel("True Positive Rate (Recall)", fontsize=12)
+    plt.grid(True)
+    plt.legend(loc="lower right", fontsize=10)
+
+    plt.show()
+    return
+
+
+@app.cell
+def _(y_scores, y_train_5):
+    from sklearn.metrics import roc_auc_score
+    roc_auc_score(y_train_5, y_scores) # Closer to 1 means a better score
+    return (roc_auc_score,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    As a rule of thumb, you should prefer the PR curve whenever the positive class is rare or when you care more about the false positives than the false negatives. Otherwise, use the ROC curve.
+    """)
+    return
+
+
+@app.cell
+def _():
+    from sklearn.ensemble import RandomForestClassifier
+
+    forest_clf = RandomForestClassifier(random_state=42)
+    return (forest_clf,)
+
+
+@app.cell
+def _(X_train, cross_val_predict, forest_clf, y_train_5):
+    y_probas_forest = cross_val_predict(forest_clf, X_train, y_train_5, cv=3, method="predict_proba")
+    return (y_probas_forest,)
+
+
+@app.cell
+def _(y_probas_forest):
+    y_probas_forest[:2]
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The CalibratedClassifierCV class from the sklearn.calibration package can calibrate the estimated probabilities using cross-validation, making them much closer to actual probabilities
+    """)
+    return
+
+
+@app.cell
+def _(precision_recall_curve, y_probas_forest, y_train_5):
+    y_scores_forest = y_probas_forest[:, 1]
+    precisions_forest, recalls_forest, thresholds_forest = precision_recall_curve(y_train_5, y_scores_forest)
+    return precisions_forest, recalls_forest, y_scores_forest
+
+
+@app.cell
+def _(X_train, confusion_matrix, cross_val_predict, forest_clf, y_train_5):
+    y_train_predict_forest = cross_val_predict(forest_clf, X_train, y_train_5, cv=3)
+    cm_rf = confusion_matrix(y_train_5, y_train_predict_forest)
+    return cm_rf, y_train_predict_forest
+
+
+@app.cell
+def _(cm_rf, convert_conf_matrix_to_df):
+    convert_conf_matrix_to_df(cm_rf)
+    return
+
+
+@app.cell
+def _(f1_score, y_train_5, y_train_predict_forest):
+    f1_score(y_train_5, y_train_predict_forest)
+    return
+
+
+@app.cell
+def _(roc_auc_score, y_scores_forest, y_train_5):
+    roc_auc_score(y_train_5, y_scores_forest)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The AUC for roc curve is way more for `random_forest` than for the `SGD` classifier. Since the higher score is much better we can say that `random_forest` is better here. The caveat of claibration is valid and can be of issue under certain circumstances.
+    """)
+    return
+
+
+@app.cell
+def _(plt, precisions, precisions_forest, recalls, recalls_forest):
+    plt.figure(figsize=(6, 5))
+
+    # 1. Base plots from your snippet
+    plt.plot(
+        recalls_forest,
+        precisions_forest,
+        "b-",
+        linewidth=2,
+        label="Random Forest",
+    )  #[cite: 3]
+    plt.plot(
+        recalls, precisions, "--", linewidth=2, label="SGD"
+    )  #[cite: 3]
+
+    # 2. Beautify the figure: labels, grid, legend, and axis limits
+    plt.xlabel("Recall", fontsize=12)  #[cite: 3]
+    plt.ylabel("Precision", fontsize=12)  #[cite: 3]
+    plt.axis([0, 1, 0, 1])  #[cite: 3]
+    plt.grid(True)  #[cite: 3]
+    plt.legend(loc="lower left", fontsize=11)  #[cite: 3]
+
+    plt.show()  #[cite: 3]
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Multiclass Classification
+
+    ## Using binary classifiers to perform multiclass classification
+
+    - One way to create a system that can classify the digit images into 10 classes (from 0 to 9) is to train 10 binary classifiers, one for each digit (a 0-detector, a 1-detector, a 2-detector, and so on). Then when you want to classify an image, you get the decision score from each classifier for that image and you select the class whose classifier outputs the highest score. This is called the one-versus-the-rest (OvR) strategy, or sometimes one-versus-all (OvA).
+
+    - Another strategy is to train a binary classifier for every pair of digits: one to distinguish 0s and 1s, another to distinguish 0s and 2s, another for 1s and 2s, and so on. This is called the one-versus-one (OvO) strategy. If there are N classes, you need to train N × (N – 1) / 2 classifiers.
+    """)
+    return
+
+
+@app.cell
+def _(X_train):
+    X_train.shape
+    return
+
+
+@app.cell
+def _(X_train, y_train):
+    from sklearn.svm import SVC
+
+    svm_clf = SVC(random_state=42)
+    svm_clf.fit(X_train[:20000], y_train[:20000]) # Training on the first 20000 images only to save time
+    return SVC, svm_clf
+
+
+@app.cell
+def _(some_digit, svm_clf):
+    svm_clf.predict([some_digit])
+    return
+
+
+@app.cell
+def _(some_digit, svm_clf):
+    some_digit_scores = svm_clf.decision_function([some_digit])
+    some_digit_scores.round(2)
+    return (some_digit_scores,)
+
+
+@app.cell
+def _(some_digit_scores, svm_clf):
+    class_id = some_digit_scores.argmax()
+    print(svm_clf.classes_[class_id])
+    return
+
+
+@app.cell
+def _(SVC, X_train, y_train):
+    from sklearn.multiclass import OneVsRestClassifier
+
+    ovr_clf = OneVsRestClassifier(SVC(random_state=42))
+    ovr_clf.fit(X_train[:2000], y_train[:2000])
+    return (ovr_clf,)
+
+
+@app.cell
+def _(ovr_clf, some_digit):
+    ovr_clf.predict([some_digit])
+    return
+
+
+@app.cell
+def _(ovr_clf):
+    len(ovr_clf.estimators_)
+    return
+
+
+@app.cell
+def _(X_train, cross_val_predict, plt, svm_clf, y_train):
+    from sklearn.metrics import ConfusionMatrixDisplay
+
+    y_train_pred_svm = cross_val_predict(svm_clf, X_train, y_train, cv=3)
+    ConfusionMatrixDisplay.from_predictions(y_train, y_train_pred_svm)
+    plt.show()
+    return (ConfusionMatrixDisplay,)
+
+
+@app.cell
+def _(SGDClassifier, X_train, cross_val_score, sgd_clf, y_train):
+    from sklearn.preprocessing import StandardScaler
+
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train.astype("float64"))
+
+    sgd_clf_multi = SGDClassifier(random_state=42)
+    sgd_clf_multi.fit(X_train, y_train)
+
+    cross_val_score(sgd_clf, X_train_scaled, y_train, cv=3, scoring="accuracy")
+    return X_train_scaled, sgd_clf_multi
+
+
+@app.cell
+def _(
+    ConfusionMatrixDisplay,
+    X_train_scaled,
+    cross_val_predict,
+    plt,
+    sgd_clf_multi,
+    y_train,
+):
+    y_train_pred_sgd = cross_val_predict(sgd_clf_multi, X_train_scaled, y_train, cv=3)
+    ConfusionMatrixDisplay.from_predictions(y_train, y_train_pred_sgd)
+    plt.show()
+    return (y_train_pred_sgd,)
+
+
+@app.cell
+def _(ConfusionMatrixDisplay, plt, y_train, y_train_pred_sgd):
+    sample_weight = (y_train_pred_sgd != y_train)
+    ConfusionMatrixDisplay.from_predictions(y_train, y_train_pred_sgd,
+                                            sample_weight=sample_weight,
+                                           normalize="true", values_format=".0%")
+    plt.show()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The 36% in row #7, column #9 in the left grid does not mean that 36% of all images of 7s were misclassified as 9s. It means that 36% of the errors the model made on images of 7s were misclassifications as 9s.
+    It is also possible to normalize the confusion matrix by column rather than by row: if you set normalize="pred". For example, you can see that 56% of misclassified 7s are actually 9s.
+
+    A much simpler approach to improve the model consists of augmenting the training set with slightly shifted and rotated variants of the training images. This will force the model to learn to be more tolerant to such variations. This is called **data augmentation**.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Multilabel Classification
+
+    Consider a face-recognition classifier: what should it do if it recognizes several people in the same picture? It should attach one tag per person it recognizes. Say the classifier has been trained to recognize three faces: Alice, Bob, and Charlie. Then when the classifier is shown a picture of Alice and Charlie, it should output [True, False, True] (meaning “Alice yes, Bob no, Charlie yes”). Such a classification system that outputs multiple binary tags is called a multilabel classification system.
+    """)
+    return
+
+
+@app.cell
+def _(X_train, np, y_train):
+    # Create a y_multilabel array containing two target labels for each digit image: 
+    # the first indicates whether the digit is large (7, 8, or 9), and the second indicates whether it is odd. 
+    # Then the code creates a KNeighborsClassifier instance, which supports multilabel classification, and 
+    # trains this model using the multiple targets array.
+
+    from sklearn.neighbors import KNeighborsClassifier
+
+    y_train_large = (y_train >= '7')
+    y_train_odd = (y_train.astype('int8') % 2 == 1)
+    y_multilabel = np.c_[y_train_large, y_train_odd]
+
+    knn_clf = KNeighborsClassifier()
+    knn_clf.fit(X_train, y_multilabel)
+    return KNeighborsClassifier, knn_clf, y_multilabel
+
+
+@app.cell
+def _(knn_clf, some_digit):
+    knn_clf.predict([some_digit])
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Evaluating Multiclass model
+    """)
+    return
+
+
+@app.cell
+def _(X_train, cross_val_predict, f1_score, knn_clf, y_multilabel):
+    y_train_knn_pred = cross_val_predict(knn_clf, X_train, y_multilabel, cv=3)
+    f1_score(y_multilabel, y_train_knn_pred, average="macro")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    This approach assumes that all labels are equally important, which may not be the case. One simple option is to give each label a weight equal to its support (i.e., the number of instances with that target label). To do this, simply set average="weighted" when calling the `f1_score()` function.⁠
+    """)
+    return
+
+
+@app.cell
+def _(SVC, X_train, y_multilabel):
+    # Creating a chain of classifiers (one feeds the decision of other)
+
+    from sklearn.multioutput import ClassifierChain
+
+    chain_clf = ClassifierChain(SVC(), cv=3, random_state=42)
+    chain_clf.fit(X_train[:2000], y_multilabel[:2000])
+    return (chain_clf,)
+
+
+@app.cell
+def _(chain_clf, some_digit):
+    chain_clf.predict([some_digit])
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Multioutput Classification
+
+    It is a generalization of multilabel classification where each label can be multiclass (i.e., it can have more than two possible values).
+    """)
+    return
+
+
+@app.cell
+def _(X_test, X_train, np):
+    # Adding noise to the MNIST dataset
+
+    rng = np.random.default_rng(seed=42)
+    noise_train = rng.integers(0, 100, (len(X_train), 784))
+    X_train_mod = X_train + noise_train
+    noise_test = rng.integers(0, 100, (len(X_test), 784))
+    X_test_mod = X_test + noise_test
+    y_train_mod = X_train
+    y_test_mod = X_test
+    return X_test_mod, X_train_mod, y_train_mod
+
+
+@app.cell
+def _(KNeighborsClassifier, X_train_mod, y_train_mod):
+    knn_clf_mod = KNeighborsClassifier()
+    knn_clf_mod.fit(X_train_mod, y_train_mod)
+    return (knn_clf_mod,)
+
+
+@app.cell
+def _(X_test_mod, knn_clf_mod, plot_digit, plt):
+    clean_digit = knn_clf_mod.predict([X_test_mod[0]])
+    plot_digit(clean_digit)
+    plt.show()
+    return
+
+
+@app.cell
+def _():
     return
 
 
